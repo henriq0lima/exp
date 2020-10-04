@@ -1,28 +1,23 @@
+const { SIGTERM } = require('constants');
 const express = require('express');
+const { Server } = require('http');
 const livrosRouter = require('./livros/livros.js');
+const gravarRouter = require('./BD/gravar.js');
+const manipularRouter = require('./BD/manipular.js');
+//const manipularRouter = require('./BD/ler.js');
+/*
+livros router index livros
+BD/gravar router input arq.txt in BD
+BD/manipular return data select BD
+BD/ler print BD in page
+*/
 const app = express();
 
-const {Client} = require('pg')
-const client = new Client({
-  user: "postgres",
-  password: "senhafraca",
-  host: "localhost",
-  port: 5432,
-  database: "livros"
-})
-
-client.connect()
-.then (() => console.log('conected succes'))
-.then(() => client.query("select * from palavras"))
-.then(results => console.table(results.rows))
-.catch(e => console.log(e))
-.finally (() => client.end())
-
-
-app.use('/livros',livrosRouter);
 global.caminhoDados = 'dados/';
+app.use('/livros', livrosRouter);
+app.use('/gravar/BD', gravarRouter);
+app.use('/manipular/BD', manipularRouter);
 
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log('A API está funcionando!');
 });
-
